@@ -16,7 +16,7 @@ public class SampleApp : MonoBehaviour {
     public Dropdown museList;
     public Text dataText;
     public Text connectionText;
-	public Text testText;
+	
 	public char[] separatingChars;
 	public string[] words;
 	public Float Alpha;
