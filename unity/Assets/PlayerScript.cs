@@ -10,12 +10,20 @@ public class PlayerScript : MonoBehaviour {
     public float angularSpeed = 1;
     public ParticleSystem laser;
     private ParticleSystem.EmissionModule em;
+    private bool laserActivated = false;
+    public float charge = 0;
+    public float rechargeRate = .001f;
+    public float dischargeRate = .01f;
+    public float range = 312.5f;
+    public Ray laserbeam;
+    public RaycastHit target;
 
     // Use this for initialization
     void Start () {
         rb = GetComponent<Rigidbody>();
         em = laser.emission;
         em.enabled = false;
+        charge = 0;
     }
 	
 	// Update is called once per frame
@@ -33,10 +41,26 @@ public class PlayerScript : MonoBehaviour {
 
         rb.velocity = (movement * speed);
         rb.angularVelocity = (turn * angularSpeed);
-        if(Input.GetKey(KeyCode.Space)) {
+        if(Input.GetKey(KeyCode.Space)&&(charge>.1||charge>0&&laserActivated==true)) {
             em.enabled = true;
+            laserActivated = true;
+            shoot();
+            charge -=dischargeRate;
+            if (charge < 0) charge = 0;
         } else {
             em.enabled = false;
+            laserActivated = false;
+            charge += rechargeRate;
+            if (charge > 1) charge = 1;
+        }
+    }
+
+    // Look for targets
+    public void shoot() {
+        laserbeam.origin = transform.position;
+        laserbeam.direction = transform.forward;
+        if(Physics.Raycast(laserbeam, out target, range)) {
+
         }
     }
 }
