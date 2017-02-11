@@ -16,6 +16,13 @@ public class SampleApp : MonoBehaviour {
     public Dropdown museList;
     public Text dataText;
     public Text connectionText;
+	public Text testText;
+	public char[] separatingChars;
+	public string[] words;
+	public Float Alpha;
+	public String Accel;
+
+
 
     //--------------------------------------
     // Public methods that gets called on UI events.
@@ -72,10 +79,13 @@ public class SampleApp : MonoBehaviour {
         Debug.Log("Libmuse version = " + muse.getLibmuseVersion());
 		print ("tgdwg");
         userPickedMuse = "";
-        dataBuffer = "";
+		dataBuffer = "";
         connectionBuffer = "";
         registerListeners();
         registerAllData();
+		separatingChars = new char[]{ '{', ',' ,':', '"'}; 
+		Alpha = "init";
+
     }
 
 
@@ -90,28 +100,28 @@ public class SampleApp : MonoBehaviour {
         // This will register for all the available data from muse headband
         // Comment out the ones you don't want
         muse.listenForDataPacket("ACCELEROMETER");
-        muse.listenForDataPacket("GYRO");
-        muse.listenForDataPacket("EEG");
-        muse.listenForDataPacket("QUANTIZATION");
-        muse.listenForDataPacket("BATTERY");
-        muse.listenForDataPacket("DRL_REF");
+        //muse.listenForDataPacket("GYRO");
+        //muse.listenForDataPacket("EEG");
+        //muse.listenForDataPacket("QUANTIZATION");
+        //muse.listenForDataPacket("BATTERY");
+        //muse.listenForDataPacket("DRL_REF");
         muse.listenForDataPacket("ALPHA_ABSOLUTE");
-        muse.listenForDataPacket("BETA_ABSOLUTE");
-        muse.listenForDataPacket("DELTA_ABSOLUTE");
-        muse.listenForDataPacket("THETA_ABSOLUTE");
-        muse.listenForDataPacket("GAMMA_ABSOLUTE");
-        muse.listenForDataPacket("ALPHA_RELATIVE");
-        muse.listenForDataPacket("BETA_RELATIVE");
-        muse.listenForDataPacket("DELTA_RELATIVE");
-        muse.listenForDataPacket("THETA_RELATIVE");
-        muse.listenForDataPacket("GAMMA_RELATIVE");
-        muse.listenForDataPacket("ALPHA_SCORE");
-        muse.listenForDataPacket("BETA_SCORE");
-        muse.listenForDataPacket("DELTA_SCORE");
-        muse.listenForDataPacket("THETA_SCORE");
-        muse.listenForDataPacket("GAMMA_SCORE");
-        muse.listenForDataPacket("HSI_PRECISION");
-        muse.listenForDataPacket("ARTIFACTS");
+        //muse.listenForDataPacket("BETA_ABSOLUTE");
+        //muse.listenForDataPacket("DELTA_ABSOLUTE");
+        //muse.listenForDataPacket("THETA_ABSOLUTE");
+        //muse.listenForDataPacket("GAMMA_ABSOLUTE");
+        //muse.listenForDataPacket("ALPHA_RELATIVE");
+        //muse.listenForDataPacket("BETA_RELATIVE");
+        //muse.listenForDataPacket("DELTA_RELATIVE");
+        //muse.listenForDataPacket("THETA_RELATIVE");
+        //muse.listenForDataPacket("GAMMA_RELATIVE");
+        //muse.listenForDataPacket("ALPHA_SCORE");
+        //muse.listenForDataPacket("BETA_SCORE");
+        //muse.listenForDataPacket("DELTA_SCORE");
+        //muse.listenForDataPacket("THETA_SCORE");
+        //muse.listenForDataPacket("GAMMA_SCORE");
+        //muse.listenForDataPacket("HSI_PRECISION");
+        //muse.listenForDataPacket("ARTIFACTS");
     }
     
     //--------------------------------------
@@ -136,17 +146,41 @@ public class SampleApp : MonoBehaviour {
     void receiveDataPackets(string data) {   
         Debug.Log("Unity received data packet: " + data);
         dataBuffer = data;
+		words = dataBuffer.Split(separatingChars, System.StringSplitOptions.RemoveEmptyEntries ); 
+		if (words [1].Equals ("ACCELEROMETER")) {
+			Accel = words [3];
+		} else if(words [1].Equals("ALPHA_ABSOLUTE")) {
+			words = words[3].Split(new Char[]{',','[',']'}, System.StringSplitOptions.RemoveEmptyEntries);
+			float tot = 0;
+			for(int i =0; i < words.Length;i++){
+				tot += float.Parse(words[i]);
+			}
+			tot /= words.Length;
+			Alpha = tot;
+
+				
+		}
+			
+		//print (words [0]);
+		//print(words[1]);
+
     }
 
     void receiveArtifactPackets(string data) {
         Debug.Log("Unity received artifact packet: " + data);
         dataBuffer = data;
+
     }
     
     // Update is called once per frame
     void Update () {
         // Display the data in the UI Text field
-        dataText.text = dataBuffer;
+
+
+		dataText.text = dataBuffer;
+
+
+
         connectionText.text = connectionBuffer;
     }
 }
